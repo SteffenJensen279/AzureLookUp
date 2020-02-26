@@ -29,10 +29,14 @@
         <Label Grid.Row="4" Grid.Column="0" Content="_Password" Target="{Binding ElementName=pwdPassword}"/>
         <PasswordBox x:Name="pwdPassword" Grid.Row="5" Grid.Column="0" PasswordChanged="pwdPassword_PasswordChanged"/>
         <Button Grid.Row="6" Grid.Column="0" Content="_Log On" Command="{Binding LogOnCmd}" IsDefault="True"/>
-        <Label Grid.Row="0" Grid.Column="1" Content="_Databases" Target="{Binding ElementName=lboDatabases}"/>
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <Label Content="_Databases" Target="{Binding ElementName=lboDatabases}"/>
+            <CheckBox Content="Automatic build on database selected" IsChecked="{Binding AutoBuildSql}" VerticalAlignment="Center" Margin="15,0,0,0"/>
+        </StackPanel>
         <ListBox x:Name="lboDatabases" Grid.Row="1" Grid.RowSpan="6" Grid.Column="2" ItemsSource="{Binding Databases}" SelectedItem="{Binding SelectedDatabase}"/>
         <Label Grid.Row="7" Grid.Column="0" Content="_Tables" Target="{Binding ElementName=lboTables}"/>
-        <ListBox x:Name="lboTables" Grid.Row="8" Grid.Column="0" ItemsSource="{Binding Tables}" SelectedItem="{Binding SelectedTable}"/>
+        <ListBox x:Name="lboTables" Grid.Row="8" Grid.Column="0" ItemsSource="{Binding Tables}" SelectedItem="{Binding SelectedTable}" SelectionMode="Multiple"/>
+        <Button Grid.Row="8" Grid.Column="0" VerticalAlignment="Bottom" Content="Build Sql for selected tables" Command="{Binding BuildSqlCmd}" HorizontalAlignment="Right" Click="btnBuildSql_Click"/>
         <Label Grid.Row="7" Grid.Column="1" Content="Content"/>
         <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding NonEmptyCols, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
         <Button Grid.Row="8" Grid.Column="1" Content="_Copy SQL" Command="{Binding CopySQLCmd}" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>

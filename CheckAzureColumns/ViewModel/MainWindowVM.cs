@@ -17,6 +17,7 @@ namespace CheckAzureColumns.ViewModel
 
         public MainWindowVM()
         {
+            SelectedTables = new ObservableCollection<Smo.Table>();
             Server = Properties.Settings.Default.ServerName;
             //Server = "sje-sql-server.database.windows.net";
             UserName = Properties.Settings.Default.UserName;
@@ -118,6 +119,13 @@ namespace CheckAzureColumns.ViewModel
         }
 
 
+        private ObservableCollection<Smo.Table> _selectedTables;
+        public ObservableCollection<Smo.Table> SelectedTables
+        {
+            get { return _selectedTables; }
+            set { SetAndInvoke(ref _selectedTables, value); }
+        }
+        
         private string _nonEmptyCols;
         public string NonEmptyCols
         {
@@ -125,25 +133,44 @@ namespace CheckAzureColumns.ViewModel
             set { SetAndInvoke(ref _nonEmptyCols, value); }
         }
 
+        private bool _autoBuildSql;
+        public bool AutoBuildSql
+        {
+            get { return _autoBuildSql; }
+            set { SetAndInvoke(ref _autoBuildSql, value); }
+        }
+
 
         private void _GetSql()
         {
             try
             {
+                if (!AutoBuildSql) return;
                 NonEmptyCols = string.Empty;
                 foreach (Smo.Table table in _selectedDatabase.Tables)
                 {
-                    NonEmptyCols = $"{NonEmptyCols}{Environment.NewLine}SELECT";
-                    foreach (Smo.Column col in table.Columns)
-                    {
-                        TheData = SelectedDatabase.ExecuteWithResults($"exec SelectColContent '{table.Name}', '{col.Name}'").Tables[0].DefaultView;
-                        int rowCount = (int)TheData[0][0];
-                        if (rowCount > 0)
-                            NonEmptyCols = $"{NonEmptyCols}{Environment.NewLine}{col.Name},";
-                    }
-                    NonEmptyCols = NonEmptyCols.Trim(',');
-                    NonEmptyCols = $"{NonEmptyCols}{Environment.NewLine}FROM {table.Name}{Environment.NewLine}";
+                    _GetSqlForTable(table);
                 }
+            }
+            catch (Exception excp)
+            {
+                MessageBox.Show(excp.ToString(), "Error happened");
+            }
+        }
+        private void _GetSqlForTable(Smo.Table table)
+        {
+            try
+            {
+                NonEmptyCols = $"{NonEmptyCols}{Environment.NewLine}SELECT";
+                foreach (Smo.Column col in table.Columns)
+                {
+                    TheData = SelectedDatabase.ExecuteWithResults($"exec SelectColContent '{table.Name}', '{col.Name}'").Tables[0].DefaultView;
+                    int rowCount = (int)TheData[0][0];
+                    if (rowCount > 0)
+                        NonEmptyCols = $"{NonEmptyCols}{Environment.NewLine}{col.Name},";
+                }
+                NonEmptyCols = NonEmptyCols.Trim(',');
+                NonEmptyCols = $"{NonEmptyCols}{Environment.NewLine}FROM {table.Name}{Environment.NewLine}";
             }
             catch (Exception excp)
             {
@@ -168,6 +195,22 @@ namespace CheckAzureColumns.ViewModel
         private bool _CanCopySQL()
         {
             return !string.IsNullOrEmpty(NonEmptyCols);
+        }
+        public RelayCmd BuildSqlCmd
+        {
+            get { return new RelayCmd(param => _BuildSql(), param => _CanBuildSql()); }
+        }
+        private void _BuildSql()
+        {
+            NonEmptyCols = string.Empty;
+            foreach (Smo.Table table in SelectedTables)
+            {
+                _GetSqlForTable(table);
+            }
+        }
+        private bool _CanBuildSql()
+        {
+            return !AutoBuildSql;
         }
 
     }
