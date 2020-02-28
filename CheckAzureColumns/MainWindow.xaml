@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CheckAzureColumns"
-        mc:Ignorable="d" Closed="Window_Closed"
-        Title="Build SQL SELECT non empty columns" Height="450" Width="800">
+        mc:Ignorable="d" Closed="Window_Closed" 
+        Title="Build SQL SELECT non empty columns" Height="450" Width="800" Icon="Resources/Icon.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

@@ -170,7 +170,7 @@ namespace CheckAzureColumns.ViewModel
                         NonEmptyCols = $"{NonEmptyCols}{Environment.NewLine}{col.Name},";
                 }
                 NonEmptyCols = NonEmptyCols.Trim(',');
-                NonEmptyCols = $"{NonEmptyCols}{Environment.NewLine}FROM {table.Name}{Environment.NewLine}";
+                NonEmptyCols = $"{NonEmptyCols}{Environment.NewLine}FROM {table.Name}{Environment.NewLine}";  
             }
             catch (Exception excp)
             {
